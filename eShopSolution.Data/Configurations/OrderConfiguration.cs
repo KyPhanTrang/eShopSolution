@@ -20,6 +20,10 @@ namespace eShopSolution.Data.Configurations
             builder.Property(x => x.ShipName).IsRequired().HasMaxLength(200);
             builder.Property(x => x.ShipPhoneNumber).IsRequired().HasMaxLength(200);
 
+            // In config of order (IEntityTypeConfiguration<Order>)
+            builder.HasOne(o => o.AppUser)          // Order.AppUser (navigation)
+                   .WithMany(u => u.Orders)        // AppUser.Orders (navigation collection)
+                   .HasForeignKey(o => o.UserId);  // Order.UserId is FK
         }
     }
 }

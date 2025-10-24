@@ -1,12 +1,15 @@
-﻿using System;
+﻿using eShopSolution.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace eShopSolution.Data.Entities
+namespace eShopSolution.Application.Catalog.Products.Dtos.Manage
 {
-    public class ProductTranslation
+    public class ProductCreateRequest
     {
-        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public decimal OriginalPrice { get; set; }
+        public int Stock { get; set; }
         public int ProductId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -15,7 +18,5 @@ namespace eShopSolution.Data.Entities
         public string SeoTitle { get; set; }
         public string SeoAlias { get; set; }
         public string LanguageId { get; set; }
-        public Product Product { get; set; }
-        public Language Language { get; set; }
     }
 }

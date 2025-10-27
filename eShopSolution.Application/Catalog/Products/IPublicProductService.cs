@@ -1,0 +1,15 @@
+﻿using eShopSolution.ViewModels.Catalog.Products.Dtos;
+using eShopSolution.ViewModels.Catalog.Products.Dtos.Public;
+using eShopSolution.ViewModels.Common;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace eShopSolution.ViewModels.Catalog.Products
+{
+    public interface IPublicProductService
+    {
+        Task<PageResult<ProductViewModel>> GetAllByCategoryId(GetPublicProductPagingRequest request);
+
+        Task<List<ProductViewModel>> GetAll();
+    }
+}

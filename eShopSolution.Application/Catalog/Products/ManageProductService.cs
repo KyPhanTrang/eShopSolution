@@ -7,8 +7,6 @@ using eShopSolution.ViewModels.Catalog.Products.Dtos.Manage;
 using eShopSolution.ViewModels.Catalog.Products.Dtos.Public;
 using eShopSolution.ViewModels.Common;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Server.IISIntegration;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,13 +14,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace eShopSolution.ViewModels.Catalog.Products
 {
     public class ManageProductService : IManageProductService
     {
         private readonly EShopDbContext _context;
-        private readonly IStorageService _storageService; 
+        private readonly IStorageService _storageService;
         public ManageProductService(EShopDbContext context, IStorageService storageService)
         {
             _context = context;
@@ -55,40 +54,52 @@ namespace eShopSolution.ViewModels.Catalog.Products
 
         public async Task<int> Create(ProductCreateRequest request)
         {
-            var product = new Product()
-            {
-                Price = request.Price,
-                OriginalPrice = request.OriginalPrice,
-                Stock = request.Stock,
-                ViewCount = 0,
-                DateCreated = DateTime.Now,
-                ProductTranslations = new List<ProductTranslation>()
+            //try
+            //{
+                var product = new Product()
                 {
-                    new ProductTranslation()
+                    Price = request.Price,
+                    OriginalPrice = request.OriginalPrice,
+                    Stock = request.Stock,
+                    ViewCount = 0,
+                    DateCreated = DateTime.Now,
+                    ProductTranslations = new List<ProductTranslation>()
                     {
-                        Name = request.Name,
-                        Description = request.Description,
-                        Details = request.Details,
-                        SeoDescription = request.SeoDescription,
-                        SeoAlias = request.SeoAlias,
-                        SeoTitle = request.SeoTitle,
-                        LanguageId = request.LanguageId
+                        new ProductTranslation()
+                        {
+                            Name = request.Name,
+                            Description = request.Description,
+                            Details = request.Details,
+                            SeoDescription = request.SeoDescription,
+                            SeoAlias = request.SeoAlias,
+                            SeoTitle = request.SeoTitle,
+                            LanguageId = request.LanguageId
+                        }
                     }
-                }
-            };
-            // Save image
-            if (request.ThumbnailImage != null)
-            {
-                var thumbnailImage = _context.ProductImages.FirstOrDefault(i => i.IsDefault == true && i.ProductId == request.ProductId);
-                if (thumbnailImage != null)
+                };
+                // Save image
+                if (request.ThumbnailImage != null)
                 {
-                    thumbnailImage.FileSize = request.ThumbnailImage.Length;
-                    thumbnailImage.ImagePath = await this.SaveFile(request.ThumbnailImage);
+                    var image = new ProductImage()
+                    {
+                        Caption = "Thumbnail",
+                        DateCreated = DateTime.Now,
+                        FileSize = request.ThumbnailImage.Length,
+                        ImagePath = await this.SaveFile(request.ThumbnailImage),
+                        IsDefault = true
+                    };
+                    product.ProductImages = new List<ProductImage> { image };
                 }
-                _context.ProductImages.Update(thumbnailImage);
-            }
-            _context.Products.Add(product);
-            return await _context.SaveChangesAsync();
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+                //return new ApiSuccessResult<int>(product.Id); ==> ok but not synchronous with whole code before
+                return product.Id;
+            //}
+            //catch (Exception ex)
+            //{
+            //    //return new ApiErrorResult<int>($"Tạo sản phẩm thất bại: {ex.Message}", 0);
+            //    return -1;
+            //}
         }
 
         public async Task<int> Delete(int productId)
@@ -157,6 +168,33 @@ namespace eShopSolution.ViewModels.Catalog.Products
             return pageResult;
         }
 
+        public async Task<ProductViewModel> GetById(int productId, string languageId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+
+            if (product == null) return null;
+
+            var productTranslation = product.ProductTranslations.FirstOrDefault(x => x.ProductId == productId 
+            && x.LanguageId == languageId);
+
+            return new ProductViewModel()
+            {
+                ProductId = productId,
+                Description = productTranslation?.Description,
+                Details = productTranslation?.Details,
+                LanguageId = productTranslation?.LanguageId,
+                Name = productTranslation?.Name,
+                OriginalPrice = product.OriginalPrice,
+                Price = product.Price,
+                Stock = product.Stock,
+                DateCreated = product.DateCreated,
+                SeoAlias = productTranslation?.SeoAlias,
+                SeoDescription = productTranslation?.SeoDescription,
+                SeoTitle = productTranslation?.SeoTitle,
+                ViewCount = product.ViewCount
+            };
+        }
+
         public Task<ProductImageViewModel> GetListImage(int productId)
         {
             throw new NotImplementedException();
@@ -202,7 +240,9 @@ namespace eShopSolution.ViewModels.Catalog.Products
 
         private async Task<string> SaveFile(IFormFile file)
         {
-            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim();
+            var originalFileName = ContentDispositionHeaderValue
+                .Parse(file.ContentDisposition)
+                .FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return fileName;

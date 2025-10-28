@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace eShopSolution.Data.EF
 {
@@ -50,6 +51,11 @@ namespace eShopSolution.Data.EF
             //base.OnModelCreating(modelBuilder);
         }
 
+        public async Task FindAsync(int productId)
+        {
+            throw new NotImplementedException();
+        }
+
         protected EShopDbContext()
         {
         }
@@ -67,5 +73,6 @@ namespace eShopSolution.Data.EF
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public object ProductTranslatios { get; set; }
     }
 }

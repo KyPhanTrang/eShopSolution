@@ -115,7 +115,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
             var images = _context.ProductImages.Where(i => i.ProductId == productId);
             foreach (var image in images)
             {
-                await _storageService.DeleateFileAsync(image.ImagePath);
+                await _storageService.DeleteFileAsync(image.ImagePath);
             }
 
             _context.Remove(product);
@@ -126,6 +126,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
         {
             var productImage = await _context.ProductImages.FindAsync(imageId);
             if (productImage == null) throw new EShopException($"Not found image with {imageId}");
+            await _storageService.DeleteFileAsync(productImage.ImagePath);
             _context.Remove(productImage);
             return await _context.SaveChangesAsync();
         }
@@ -259,10 +260,15 @@ namespace eShopSolution.ViewModels.Catalog.Products
         public async Task<int> UpdateImage(int imageId, ProductImageUpdateRequest request)
         {
             var productImage = await _context.ProductImages.FindAsync(imageId);
+
             if (productImage == null) throw new EShopException($"Cannot find an image with id: {imageId}");
+            else await _storageService.DeleteFileAsync(productImage.ImagePath); // Delete before update new image
 
             if (request.ImageFile != null)
             {
+                productImage.Caption = request.Caption;
+                productImage.IsDefault = request.IsDefault;
+                productImage.SortOrder = request.SortOrder;
                 productImage.FileSize = request.ImageFile.Length;
                 productImage.ImagePath = await this.SaveFile(request.ImageFile);
             }
@@ -289,7 +295,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
 
         private async Task<string> SaveFile(IFormFile file)
         {
-            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim();
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
             return fileName;

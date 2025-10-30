@@ -37,10 +37,5 @@ namespace eShopSolution.Application.Common
                 await Task.Run(() => File.Delete(filePath));
             }
         }
-
-        public Task DeleateFileAsync(string fileName)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

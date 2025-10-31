@@ -12,9 +12,9 @@ namespace eShopSolution.BackendApi.Controllers
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userSevice)
+        public UsersController(IUserService userService)
         {
-            _userService = userSevice;
+            _userService = userService;
         }
 
         [HttpPost("authenticate")]

@@ -19,11 +19,11 @@ namespace eShopSolution.BackendApi.Controllers
 
         [HttpPost("authenticate")]
         [AllowAnonymous] // Don't need login, u still cant call that
-        public async Task<IActionResult> Authenticate([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Authenticate([FromForm] LoginRequest loginRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var resultToken = await _userService.Authencate(loginRequest);
+            var resultToken = await _userService.Authenticate(loginRequest);
             if (string.IsNullOrEmpty(resultToken))
                 return BadRequest("Username or password is incorrect.");
 

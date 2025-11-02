@@ -33,11 +33,9 @@ namespace eShopSolution.Application.System
         {
             if (request == null) return null;
 
-            var remember = request.RememberMe ?? false;
-
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null) return null;
-            var result = await _signInManager.PasswordSignInAsync(user, request.Password, remember, true); // last argument is lookout on failure ==> if fail too much ==> lock acc
+            var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, true); // last argument is lookout on failure ==> if fail too much ==> lock acc
             if (!result.Succeeded)
             {
                 return null;

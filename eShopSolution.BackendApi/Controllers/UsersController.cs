@@ -19,7 +19,7 @@ namespace eShopSolution.BackendApi.Controllers
 
         [HttpPost("authenticate")]
         [AllowAnonymous] // Don't need login, u still cant call that
-        public async Task<IActionResult> Authenticate([FromForm] LoginRequest loginRequest)
+        public async Task<IActionResult> Authenticate([FromBody] LoginRequest loginRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -31,7 +31,7 @@ namespace eShopSolution.BackendApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] RegisterRequest registerRequest)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 

@@ -8,6 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
+using eShopSolution.ViewModels.Common;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace eShopSolution.Application.System
 {
@@ -62,6 +67,38 @@ namespace eShopSolution.Application.System
                 signingCredentials: creds); // Chữ ký bảo mật
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<PageResult<UserViewModel>> GetUsersPaging(GetUserPagingRequest request)
+        {
+            var query = _userManager.Users;
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                query = query.Where(x => (x.UserName.Contains(request.Keyword)) ||
+                    x.PhoneNumber.Contains(request.Keyword));
+
+                // Paging
+                int totalRow = await query.CountAsync();
+                var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+                    .Take(request.PageSize)
+                    .Select(x => new UserViewModel()
+                    {
+                        Id = x.Id,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        Email = x.Email,
+                        PhoneNumber = x.PhoneNumber,
+                        UserName = x.UserName
+                    }).ToListAsync();
+
+                var pageResult = new PageResult<UserViewModel>()
+                {
+                    Items = data,
+                    TotalRecord = totalRow
+                };
+                return pageResult;
+            }
+            return null;
         }
 
         public async Task<bool> Register(RegisterRequest request)

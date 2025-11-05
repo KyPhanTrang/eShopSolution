@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private readonly IUserApiClient _userApiClient;
         private readonly IConfiguration _config;
@@ -50,6 +50,7 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> Login()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Remove("Token");
             return View();
         }
 
@@ -78,6 +79,24 @@ namespace eShopSolution.AdminApp.Controllers
                     authProperties);
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(RegisterRequest registerRequest)
+        {
+            if (!ModelState.IsValid)
+                return View();
+
+            var result = await _userApiClient.RegisterUser(registerRequest);
+            if (result) return RedirectToAction("Index", "User");
+
+            return View(registerRequest);
         }
 
         [HttpPost]

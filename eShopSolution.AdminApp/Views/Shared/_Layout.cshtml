@@ -9,12 +9,10 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>@ViewData["Title"] - Administration</title>
-
+    <title>@ViewData["Title"]</title>
 
     <!-- Custom fonts for this template-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" type="text/css" />
-    @* <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"> *@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
 
@@ -44,9 +42,9 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" asp-action="Index" asp-controller="Home">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span>Hệ thống quản trị</span>
                 </a>
             </li>
 
@@ -55,21 +53,21 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Interface
+                Giao diện
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Components</span>
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Người dùng</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="buttons.html">Buttons</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
+                        <h6 class="collapse-header">Các thao tác:</h6>
+                        <a class="collapse-item" asp-action="Index" asp-controller="User">Danh sách</a>
+                        <a class="collapse-item" asp-action="Create" asp-controller="User">Tạo mới</a>
                     </div>
                 </div>
             </li>
@@ -98,7 +96,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Addons
+                Tiện ích bổ sung
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -106,18 +104,18 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                    aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
-                    <span>Pages</span>
+                    <span>Danh sách trang</span>
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Login Screens:</h6>
-                        <a class="collapse-item" href="login.html">Login</a>
-                        <a class="collapse-item" href="register.html">Register</a>
-                        <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                        <h6 class="collapse-header">Màn hình đăng nhập:</h6>
+                        <a class="collapse-item" asp-action="Login" asp-controller="User">Đăng nhập</a>
+                        <a class="collapse-item" asp-action="Create" asp-controller="User">Đăng ký</a>
+                        <a class="collapse-item" href="forgot-password.html">Quên mật khẩu</a>
                         <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Other Pages:</h6>
+                        <h6 class="collapse-header">Trang khác:</h6>
                         <a class="collapse-item" href="404.html">404 Page</a>
-                        <a class="collapse-item" href="blank.html">Blank Page</a>
+                        <a class="collapse-item" href="blank.html">Trang trống (Blank Page)</a>
                     </div>
                 </div>
             </li>

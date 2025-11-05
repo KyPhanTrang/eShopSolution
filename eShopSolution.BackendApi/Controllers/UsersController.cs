@@ -31,7 +31,7 @@ namespace eShopSolution.BackendApi.Controllers
             return Ok(resultToken);
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {

@@ -1,15 +1,20 @@
 ﻿using eShopSolution.ViewModels.Common;
 using eShopSolution.ViewModels.System.Users;
+using System;
 using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Services
 {
     public interface IUserApiClient
     {
-        Task<string> Authenticate(LoginRequest loginRequest);
+        Task<ApiResult<string>> Authenticate(LoginRequest loginRequest);
 
-        Task<PageResult<UserViewModel>> GetUsersPaging(GetUserPagingRequest getUserPagingRequest);
+        Task<ApiResult<PageResult<UserViewModel>>> GetUsersPaging(GetUserPagingRequest getUserPagingRequest);
 
-        Task<bool> RegisterUser(RegisterRequest registerRequest);
+        Task<ApiResult<bool>> RegisterUser(RegisterRequest registerRequest);
+
+        Task<ApiResult<bool>> UpdateUser(Guid id, UserUpdateRequest userUpdateRequest);
+
+        Task<ApiResult<UserUpdateRequest>> GetUserById(Guid id);
     }
 }

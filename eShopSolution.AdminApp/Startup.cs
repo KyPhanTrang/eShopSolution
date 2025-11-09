@@ -54,6 +54,7 @@ namespace eShopSolution.AdminApp
                 options.Cookie.SecurePolicy = CookieSecurePolicy.None;
             });
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUserApiClient, UserApiClient>();
 
             IMvcBuilder builder = services.AddRazorPages();

@@ -27,7 +27,7 @@ namespace eShopSolution.AdminApp.Controllers
             _config = config;
         }
 
-        public async Task<IActionResult> Index(string keyword = "0", int pageIndex = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
         {
             var session = HttpContext.Session.GetString("Token");
 
@@ -35,7 +35,6 @@ namespace eShopSolution.AdminApp.Controllers
 
             var request = new GetUserPagingRequest()
             {
-                BearerToken = session,
                 Keyword = keyword,
                 PageIndex = pageIndex,
                 PageSize = pageSize
@@ -43,7 +42,7 @@ namespace eShopSolution.AdminApp.Controllers
 
             var data = await _userApiClient.GetUsersPaging(request);
 
-            return View(data);
+            return View(data.ResultObj);
         }
 
         [HttpGet]
@@ -60,8 +59,8 @@ namespace eShopSolution.AdminApp.Controllers
             if (!ModelState.IsValid)
                 return View(ModelState);
 
-            var token = await _userApiClient.Authenticate(loginRequest);
-            var usePrincipal = this.ValidateToken(token);
+            var result = await _userApiClient.Authenticate(loginRequest);
+            var usePrincipal = this.ValidateToken(result.ResultObj);
 
             var authProperties = new AuthenticationProperties()
             {
@@ -71,7 +70,7 @@ namespace eShopSolution.AdminApp.Controllers
                     : DateTimeOffset.UtcNow.AddMinutes(15)
             };
 
-            HttpContext.Session.SetString("Token", token);
+            HttpContext.Session.SetString("Token", result.ResultObj);
 
             await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
@@ -94,9 +93,46 @@ namespace eShopSolution.AdminApp.Controllers
                 return View();
 
             var result = await _userApiClient.RegisterUser(registerRequest);
-            if (result) return RedirectToAction("Index", "User");
+            if (result.IsSuccess) return RedirectToAction("Index", "User");
 
+            ModelState.AddModelError("", result.Message);
             return View(registerRequest);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var result = await _userApiClient.GetUserById(id);
+
+            if (result.IsSuccess)
+            {
+                var userUpdateRequest = new UserUpdateRequest()
+                {
+                    Id = result.ResultObj.Id,
+                    LastName = result.ResultObj.LastName,
+                    FirstName = result.ResultObj.FirstName,
+                    Email = result.ResultObj.Email,
+                    Dob = result.ResultObj.Dob,
+                    PhoneNumber = result.ResultObj.PhoneNumber
+                };
+
+                return View(userUpdateRequest);
+            }
+            return RedirectToAction("Error", "Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UserUpdateRequest userUpdateRequest)
+        {
+            if (!ModelState.IsValid)
+                return View();
+
+            var result = await _userApiClient.UpdateUser(userUpdateRequest.Id, userUpdateRequest);
+
+            if (result.IsSuccess) return RedirectToAction("Index", "User");
+
+            ModelState.AddModelError("", result.Message);
+            return View(userUpdateRequest);
         }
 
         [HttpPost]

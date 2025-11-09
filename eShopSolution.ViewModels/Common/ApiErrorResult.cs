@@ -6,9 +6,23 @@ namespace eShopSolution.ViewModels.Common
 {
     public class ApiErrorResult<T> : ApiResult<T>
     {
-        public ApiErrorResult(T resultObj)
-            : base(false, resultObj) { }
-        public ApiErrorResult(string message, T resultObj)
-            : base(false, message, resultObj) { }
+        public string[] ValidationErrors { get; set; }
+
+        public ApiErrorResult()
+        {
+            IsSuccess = false;
+        }
+
+        public ApiErrorResult(string message)
+        {
+            IsSuccess = false;
+            Message = message;
+        }
+
+        public ApiErrorResult(string[] validationErrors)
+        {
+            IsSuccess = false;
+            ValidationErrors = validationErrors;
+        }
     }
 }

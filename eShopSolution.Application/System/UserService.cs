@@ -34,16 +34,16 @@ namespace eShopSolution.Application.System
             _config = config;
         }
 
-        public async Task<string> Authenticate(LoginRequest request)
+        public async Task<ApiResult<string>> Authenticate(LoginRequest request)
         {
-            if (request == null) return null;
+            if (request == null) return new ApiErrorResult<string>("Request is null");
 
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null) return null;
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, true); // last argument is lookout on failure ==> if fail too much ==> lock acc
             if (!result.Succeeded)
             {
-                return null;
+                return new ApiErrorResult<string>("Incorrect password or username!");
             }
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -66,43 +66,68 @@ namespace eShopSolution.Application.System
                 expires: DateTime.Now.AddHours(3), // Hạn dùng token
                 signingCredentials: creds); // Chữ ký bảo mật
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        public async Task<PageResult<UserViewModel>> GetUsersPaging(GetUserPagingRequest request)
+        public async Task<ApiResult<UserViewModel>> GetById(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return new ApiErrorResult<UserViewModel>("User not exists");
+
+            return new ApiSuccessResult<UserViewModel>(new UserViewModel()
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                Dob = user.Dob
+            });
+        }
+
+        public async Task<ApiResult<PageResult<UserViewModel>>> GetUsersPaging(GetUserPagingRequest request)
         {
             var query = _userManager.Users;
             if (!string.IsNullOrEmpty(request.Keyword))
             {
-                query = query.Where(x => (x.UserName.Contains(request.Keyword)) ||
-                    x.PhoneNumber.Contains(request.Keyword));
-
-                // Paging
-                int totalRow = await query.CountAsync();
-                var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
-                    .Take(request.PageSize)
-                    .Select(x => new UserViewModel()
-                    {
-                        Id = x.Id,
-                        FirstName = x.FirstName,
-                        LastName = x.LastName,
-                        Email = x.Email,
-                        PhoneNumber = x.PhoneNumber,
-                        UserName = x.UserName
-                    }).ToListAsync();
-
-                var pageResult = new PageResult<UserViewModel>()
-                {
-                    Items = data,
-                    TotalRecord = totalRow
-                };
-                return pageResult;
+                query = query.Where(x => x.UserName.Contains(request.Keyword)
+                    || x.PhoneNumber.Contains(request.Keyword));
             }
-            return null;
+
+            // Paging
+            int totalRow = await query.CountAsync();
+            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(x => new UserViewModel()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber,
+                    UserName = x.UserName
+                }).ToListAsync();
+
+            var pageResult = new PageResult<UserViewModel>()
+            {
+                Items = data,
+                TotalRecord = totalRow
+            };
+            return new ApiSuccessResult<PageResult<UserViewModel>>(pageResult);
         }
 
-        public async Task<bool> Register(RegisterRequest request)
+        public async Task<ApiResult<bool>> Register(RegisterRequest request)
         {
+            if (await _userManager.FindByNameAsync(request.UserName) != null)
+            {
+                return new ApiErrorResult<bool>("User name already exists");
+            }
+
+            if (await _userManager.FindByEmailAsync(request.Email) != null)
+                return new ApiErrorResult<bool>("Email already exists");
+
             var user = new AppUser()
             {
                 Dob = request.Dob,
@@ -113,7 +138,30 @@ namespace eShopSolution.Application.System
                 PhoneNumber = request.PhoneNumber
             };
             var result = await _userManager.CreateAsync(user, request.Password);
-            return result.Succeeded;
+            if (result.Succeeded)
+            {
+                return new ApiSuccessResult<bool>();
+            }
+            return new ApiErrorResult<bool>("Register is unsuccessful");
+        }
+
+        public async Task<ApiResult<bool>> Update(Guid id, UserUpdateRequest userUpdateRequest)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.Email == userUpdateRequest.Email && x.Id != id))
+                return new ApiErrorResult<bool>("Email has been used");
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            user.FirstName = userUpdateRequest.FirstName;
+            user.LastName = userUpdateRequest.LastName;
+            user.Email = userUpdateRequest.Email;
+            user.Dob = userUpdateRequest.Dob;
+            user.PhoneNumber = userUpdateRequest.PhoneNumber;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+                return new ApiSuccessResult<bool>();
+            return new ApiErrorResult<bool>("Update failed");
         }
     }
 }

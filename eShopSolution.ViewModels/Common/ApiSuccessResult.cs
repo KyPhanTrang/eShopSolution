@@ -6,9 +6,15 @@ namespace eShopSolution.ViewModels.Common
 {
     public class ApiSuccessResult<T> : ApiResult<T>
     {
+        public ApiSuccessResult()
+        {
+            IsSuccess = true;
+        }
+
         public ApiSuccessResult(T resultObj)
-            : base(true, resultObj) { }
-        public ApiSuccessResult(string message, T resultObj)
-            :base(true, message, resultObj) { }
+        {
+            IsSuccess = true;
+            ResultObj = resultObj;
+        }
     }
 }

@@ -43,7 +43,7 @@ namespace eShopSolution.AdminApp.Services
             return JsonConvert.DeserializeObject<ApiErrorResult<string>>(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<ApiResult<UserUpdateRequest>> GetUserById(Guid id)
+        public async Task<ApiResult<UserViewModel>> GetUserById(Guid id)
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
 
@@ -56,10 +56,10 @@ namespace eShopSolution.AdminApp.Services
 
             if (response.IsSuccessStatusCode)
             {
-                return JsonConvert.DeserializeObject<ApiSuccessResult<UserUpdateRequest>>(body);
+                return JsonConvert.DeserializeObject<ApiSuccessResult<UserViewModel>>(body);
             }
 
-            return JsonConvert.DeserializeObject<ApiErrorResult<UserUpdateRequest>>(body);
+            return JsonConvert.DeserializeObject<ApiErrorResult<UserViewModel>>(body);
         }
 
         public async Task<ApiResult<PageResult<UserViewModel>>> GetUsersPaging(GetUserPagingRequest request)

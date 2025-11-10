@@ -113,7 +113,9 @@ namespace eShopSolution.Application.System
             var pageResult = new PageResult<UserViewModel>()
             {
                 Items = data,
-                TotalRecord = totalRow
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize
             };
             return new ApiSuccessResult<PageResult<UserViewModel>>(pageResult);
         }

@@ -55,7 +55,9 @@ namespace eShopSolution.ViewModels.Catalog.Products
                 }).ToListAsync();
             var pageResult = new PageResult<ProductViewModel>()
             {
-                TotalRecord = totalRow,
+                TotalRecords = totalRow,
+                PageSize = request.PageSize,
+                PageIndex = request.PageIndex,
                 Items = data
             };
             return pageResult;

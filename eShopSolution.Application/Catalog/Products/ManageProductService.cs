@@ -170,7 +170,9 @@ namespace eShopSolution.ViewModels.Catalog.Products
             // 4. Select and project
             var pageResult = new PageResult<ProductViewModel>()
             {
-                TotalRecord = totalRow,
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
                 Items = data
             };
 

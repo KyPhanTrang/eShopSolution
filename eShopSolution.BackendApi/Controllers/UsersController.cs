@@ -58,6 +58,16 @@ namespace eShopSolution.BackendApi.Controllers
             return Ok(result);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteById(Guid id)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.DeleteById(id);
+            if (!result.IsSuccess) return BadRequest(result);
+            return Ok(result);
+        }
+
         //https://localhost/api/users/paging?pagIndex=1&pageSize=2&keyword=...
         [HttpGet("paging")]
         public async Task<IActionResult> GetAllPaging([FromQuery] GetUserPagingRequest request)

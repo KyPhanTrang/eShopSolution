@@ -69,6 +69,21 @@ namespace eShopSolution.Application.System
             return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
+        public async Task<ApiResult<bool>> DeleteById(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return new ApiErrorResult<bool>("User not exists");
+            }
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return new ApiSuccessResult<bool>();
+            }
+            return new ApiErrorResult<bool>("Delete failed");
+        }
+
         public async Task<ApiResult<UserViewModel>> GetById(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());

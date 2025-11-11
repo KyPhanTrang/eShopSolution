@@ -27,7 +27,7 @@ namespace eShopSolution.AdminApp.Controllers
             _config = config;
         }
 
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 1)
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
         {
             var session = HttpContext.Session.GetString("Token");
 
@@ -41,6 +41,10 @@ namespace eShopSolution.AdminApp.Controllers
             };
 
             var data = await _userApiClient.GetUsersPaging(request);
+
+            // Lấy thông báo từ TempData (nếu có)
+            ViewBag.Message = TempData["Message"];
+            ViewBag.IsSuccess = TempData["IsSuccess"];
 
             return View(data.ResultObj);
         }
@@ -93,8 +97,15 @@ namespace eShopSolution.AdminApp.Controllers
                 return View();
 
             var result = await _userApiClient.RegisterUser(registerRequest);
-            if (result.IsSuccess) return RedirectToAction("Index", "User");
+            if (result.IsSuccess)
+            {
+                TempData["Message"] = "Tạo người dùng thành công!";
+                TempData["IsSuccess"] = true;
+                return RedirectToAction("Index", "User");
+            }
 
+            TempData["Message"] = "Tạo người dùng thất bại!";
+            TempData["IsSuccess"] = false;
             ModelState.AddModelError("", result.Message);
             return View(registerRequest);
         }
@@ -136,10 +147,47 @@ namespace eShopSolution.AdminApp.Controllers
 
             var result = await _userApiClient.UpdateUser(userUpdateRequest.Id, userUpdateRequest);
 
-            if (result.IsSuccess) return RedirectToAction("Index", "User");
+            if (result.IsSuccess)
+            {
+                TempData["Message"] = "Cập nhât thông tin thành công!";
+                TempData["IsSuccess"] = true;
+                return RedirectToAction("Index", "User");
+            }
 
+            TempData["Message"] = "Cập nhât thất bại!";
+            TempData["IsSuccess"] = false;
             ModelState.AddModelError("", result.Message);
             return View(userUpdateRequest);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(Guid id)
+        {
+            var userDeleterRequest = new UserDeleteRequest()
+            {
+                Id = id
+            };
+            return View(userDeleterRequest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(UserDeleteRequest userDeleteRequest)
+        {
+            if (!ModelState.IsValid)
+                return View();
+
+            var result = await _userApiClient.DeleteById(userDeleteRequest.Id);
+            if (result.IsSuccess)
+            {
+                TempData["Message"] = "Xóa người dùng thành công!";
+                TempData["IsSuccess"] = true;
+                return RedirectToAction("Index", "User");
+            }
+
+            TempData["Message"] = "Xóa thất bại!";
+            TempData["IsSuccess"] = false;
+            ModelState.AddModelError("", result.Message);
+            return View(userDeleteRequest);
         }
 
         [HttpPost]

@@ -27,7 +27,7 @@ namespace eShopSolution.AdminApp.Controllers
             _config = config;
         }
 
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 1)
         {
             var session = HttpContext.Session.GetString("Token");
 
@@ -45,6 +45,7 @@ namespace eShopSolution.AdminApp.Controllers
             // Lấy thông báo từ TempData (nếu có)
             ViewBag.Message = TempData["Message"];
             ViewBag.IsSuccess = TempData["IsSuccess"];
+            ViewBag.Keyword = keyword;
 
             return View(data.ResultObj);
         }
@@ -52,8 +53,6 @@ namespace eShopSolution.AdminApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Login()
         {
-            ViewBag.Message = TempData["Message"];
-            ViewBag.IsSuccess = TempData["IsSuccess"];
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Remove("Token");
             return View();
@@ -65,11 +64,11 @@ namespace eShopSolution.AdminApp.Controllers
             if (!ModelState.IsValid)
                 return View(ModelState);
             var result = await _userApiClient.Authenticate(loginRequest);
-            if (!result.IsSuccess)
+            if (result.ResultObj == null)
             {
-                TempData["Message"] = result.Message;
-                TempData["IsSuccess"] = false;
-                return View(loginRequest);
+                var message = (result.Message == null) ? "Lỗi đăng nhập" : result.Message;
+                ModelState.AddModelError("", message);
+                return View();
             }
             var usePrincipal = this.ValidateToken(result.ResultObj);
 

@@ -43,8 +43,30 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary"><a class="btn btn-success" asp-action="Create" asp-controller="User">Thêm người dùng</a></h6>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <h6 class="m-0 font-weight-bold text-primary"><a class="btn btn-success" asp-action="Create" asp-controller="User">Thêm người dùng</a></h6>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <form asp-action="Index" method="get" class="d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" name="keyword" class="form-control bg-gray-300 border-0 small" placeholder="Search for..."
+                                   aria-label="Search" aria-describedby="basic-addon2" value="@ViewBag.Keyword">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                                <button class="btn btn-dark" onclick="window.location.href='/User/Index'" type="reset">
+                                    <i class="fas fa-circle-notch fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+
+        
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">

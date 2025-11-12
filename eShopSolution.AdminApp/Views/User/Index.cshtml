@@ -7,13 +7,29 @@
 }
 
 <!-- Notification success or failed -->
-@if (ViewBag.Message != null)
+@if (TempData["Message"] != null)
 {
-    <div class="alert @(ViewBag.IsSuccess == true ? "alert-success" : "alert-danger") alert-dismissible fade show position-fixed m-3 shadow"
-         style="top: 55px; right: 0px; z-index: 9999; box-shadow: 0 0 10px rgba(0,0,0,0.2); border-radius: 5px; min-width: 250px;"
-         role="alert">
-        <strong>@ViewBag.Message</strong>
-    </div>
+    var msg = TempData["Message"]?.ToString();
+    var isSuccess = TempData["IsSuccess"] as bool? ?? false;
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            Toastify({
+                text: "@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(msg))",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: {
+                    background: "@(isSuccess ? "#28a745" : "#dc3545")",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+                    fontWeight: "500",
+                    padding: "12px 18px"
+                },
+                stopOnFocus: true,
+            }).showToast();
+        });
+    </script>
 }
 
 <div class="container-fluid">

@@ -26,9 +26,37 @@
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.min.css" rel="stylesheet">
 
+    <!--Toastfify library (for notification)-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 </head>
 
 <body class="bg-gradient-primary">
+
+    @if (TempData["Message"] != null)
+    {
+        var msg = TempData["Message"]?.ToString();
+        var isSuccess = TempData["IsSuccess"] as bool? ?? false;
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Toastify({
+                    text: "@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(msg))",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    style: {
+                        background: "@(isSuccess ? "#28a745" : "#dc3545")",
+                        color: "#fff",
+                        borderRadius: "8px",
+                        boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+                        fontWeight: "500",
+                        padding: "12px 18px"
+                    },
+                    stopOnFocus: true,
+                }).showToast();
+            });
+        </script>
+    }
 
     <div class="container">
 
@@ -109,6 +137,8 @@
     <!-- Custom scripts for all pages-->
     <script src="/js/sb-admin-2.min.js"></script>
 
+    <!-- Toastify (notification success of failed)  -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
 
 </html>

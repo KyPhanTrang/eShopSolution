@@ -39,7 +39,7 @@ namespace eShopSolution.Application.System
             if (request == null) return new ApiErrorResult<string>("Request is null");
 
             var user = await _userManager.FindByNameAsync(request.UserName);
-            if (user == null) return null;
+            if (user == null) return new ApiErrorResult<string>("Account not exists");
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, true); // last argument is lookout on failure ==> if fail too much ==> lock acc
             if (!result.Succeeded)
             {

@@ -52,6 +52,8 @@ namespace eShopSolution.AdminApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Login()
         {
+            ViewBag.Message = TempData["Message"];
+            ViewBag.IsSuccess = TempData["IsSuccess"];
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Remove("Token");
             return View();
@@ -62,8 +64,13 @@ namespace eShopSolution.AdminApp.Controllers
         {
             if (!ModelState.IsValid)
                 return View(ModelState);
-
             var result = await _userApiClient.Authenticate(loginRequest);
+            if (!result.IsSuccess)
+            {
+                TempData["Message"] = result.Message;
+                TempData["IsSuccess"] = false;
+                return View(loginRequest);
+            }
             var usePrincipal = this.ValidateToken(result.ResultObj);
 
             var authProperties = new AuthenticationProperties()
@@ -81,6 +88,8 @@ namespace eShopSolution.AdminApp.Controllers
                     usePrincipal,
                     authProperties);
 
+            TempData["Message"] = "Đang nhập thành công";
+            TempData["IsSuccess"] = true;
             return RedirectToAction("Index", "Home");
         }
 

@@ -27,7 +27,7 @@ namespace eShopSolution.AdminApp.Controllers
             _config = config;
         }
 
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 1)
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
         {
             var session = HttpContext.Session.GetString("Token");
 
@@ -87,8 +87,6 @@ namespace eShopSolution.AdminApp.Controllers
                     usePrincipal,
                     authProperties);
 
-            TempData["Message"] = "Đang nhập thành công";
-            TempData["IsSuccess"] = true;
             return RedirectToAction("Index", "Home");
         }
 

@@ -2,31 +2,6 @@
     ViewData["Title"] = "Trang chủ";
 }
 
-@if (TempData["Message"] != null)
-{
-    var msg = TempData["Message"]?.ToString();
-    var isSuccess = TempData["IsSuccess"] as bool? ?? false;
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            Toastify({
-                text: "@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(msg))",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                style: {
-                    background: "@(isSuccess ? "#28a745" : "#dc3545")",
-                    color: "#fff",
-                    borderRadius: "8px",
-                    boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
-                    fontWeight: "500",
-                    padding: "12px 18px"
-                },
-                stopOnFocus: true,
-            }).showToast();
-        });
-    </script>
-}
-
 <div class="container-fluid">
 
     <!-- Page Heading -->

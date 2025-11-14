@@ -77,7 +77,7 @@
                             <th>Tài khoản</th>
                             <th>Số điện thoại</th>
                             <th>Email</th>
-                            <th scope="col" colspan="3" class="text-center">Thao tác</th>
+                            <th scope="col" colspan="4" class="text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -87,7 +87,7 @@
                             <th>Tài khoản</th>
                             <th>Số điện thoại</th>
                             <th>Email</th>
-                            <th scope="col" colspan="3" class="text-center">Thao tác</th>
+                            <th scope="col" colspan="4" class="text-center">Thao tác</th>
                         </tr>
                     </tfoot>
                     <tbody>
@@ -118,6 +118,11 @@
                                         </button>
                                     <input type="hidden" id="deleteUserId"/>
                                 </form>
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="RoleAssign" asp-controller="User" class="btn btn-primary" asp-route-id="@item.Id">
+                                    <i class="fa fa-user-cog"></i>
+                                </a>
                             </td>
                         </tr>
                     }

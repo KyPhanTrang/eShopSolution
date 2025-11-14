@@ -27,5 +27,7 @@ namespace eShopSolution.ViewModels.System.Users
         [DataType(DataType.Date)]
         [Display(Name = "Dob")]
         public DateTime Dob { get; set; }
+
+        public IList<string> Roles { get; set; }
     }
 }

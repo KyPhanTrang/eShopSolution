@@ -14,7 +14,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace eShopSolution.Application.System
+namespace eShopSolution.Application.System.Users
 {
     public class UserService : IUserService
     {
@@ -89,6 +89,7 @@ namespace eShopSolution.Application.System
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
                 return new ApiErrorResult<UserViewModel>("User not exists");
+            var roles = await _userManager.GetRolesAsync(user);
 
             return new ApiSuccessResult<UserViewModel>(new UserViewModel()
             {
@@ -98,7 +99,8 @@ namespace eShopSolution.Application.System
                 UserName = user.UserName,
                 PhoneNumber = user.PhoneNumber,
                 Email = user.Email,
-                Dob = user.Dob
+                Dob = user.Dob,
+                Roles = roles
             });
         }
 
@@ -160,6 +162,34 @@ namespace eShopSolution.Application.System
                 return new ApiSuccessResult<bool>();
             }
             return new ApiErrorResult<bool>("Register is unsuccessful");
+        }
+
+        public async Task<ApiResult<bool>> RoleAssign(Guid id, RoleAssignRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return new ApiErrorResult<bool>("User not exists!");
+            var removeRoles = request.Roles.Where(x => x.Selected == false).Select(x => x.Name).ToList();
+            if (removeRoles.Any())
+            {
+                foreach (var roleName in removeRoles)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, roleName);
+                }
+            }
+            var addRoles = request.Roles.Where(x => x.Selected).Select(x => x.Name).ToList();
+            if (addRoles.Any())
+            {
+                foreach (var roleName in addRoles)
+                {
+                    if (await _userManager.IsInRoleAsync(user, roleName) == false)
+                    {
+                        await _userManager.AddToRoleAsync(user, roleName);
+                    }
+                }
+            }
+
+            return new ApiSuccessResult<bool>();
         }
 
         public async Task<ApiResult<bool>> Update(Guid id, UserUpdateRequest userUpdateRequest)

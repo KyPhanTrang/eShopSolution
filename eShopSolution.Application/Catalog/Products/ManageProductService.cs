@@ -17,7 +17,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace eShopSolution.ViewModels.Catalog.Products
+namespace eShopSolution.Application.Catalog.Products
 {
     public class ManageProductService : IManageProductService
     {
@@ -43,7 +43,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
             if (request.ImageFile != null)
             {
                 productImage.FileSize = request.ImageFile.Length;
-                productImage.ImagePath = await this.SaveFile(request.ImageFile);
+                productImage.ImagePath = await SaveFile(request.ImageFile);
             }
             _context.ProductImages.Add(productImage);
             await _context.SaveChangesAsync();
@@ -90,7 +90,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
                     Caption = "Thumbnail",
                     DateCreated = DateTime.Now,
                     FileSize = request.ThumbnailImage.Length,
-                    ImagePath = await this.SaveFile(request.ThumbnailImage),
+                    ImagePath = await SaveFile(request.ThumbnailImage),
                     IsDefault = true
                 };
                 product.ProductImages = new List<ProductImage> { image };
@@ -131,18 +131,19 @@ namespace eShopSolution.ViewModels.Catalog.Products
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<PageResult<ProductViewModel>> GetAllPaging(GetManageProductPagingRequest request)
+        public async Task<ApiResult<PageResult<ProductViewModel>>> GetAllPaging(GetManageProductPagingRequest request)
         {
             // 1. Select join
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
                         join pic in _context.ProductInCategories on pt.ProductId equals pic.ProductId
                         join c in _context.Categories on pic.CategoryId equals c.Id
+                        where pt.LanguageId == request.LanguageId
                         select new { p, pt, pic };
             // Filter
-            if (!string.IsNullOrEmpty(request.KeyWord))
-                query = query.Where(x => x.pt.Name.Contains(request.KeyWord));
-            if (request.CategoryIds.Count > 0)
+            if (!string.IsNullOrEmpty(request.Keyword))
+                query = query.Where(x => x.pt.Name.Contains(request.Keyword));
+            if (request.CategoryIds != null || request.CategoryIds.Count > 0)
                 query = query.Where(p => request.CategoryIds.Contains(p.pic.CategoryId));
 
             // 3. Paging
@@ -167,6 +168,11 @@ namespace eShopSolution.ViewModels.Catalog.Products
                     ViewCount = x.p.ViewCount
                 }).ToListAsync();
 
+            if (data.Count == 0)
+            {
+                return new ApiErrorResult<PageResult<ProductViewModel>>("Not exists product");
+            }
+
             // 4. Select and project
             var pageResult = new PageResult<ProductViewModel>()
             {
@@ -176,7 +182,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
                 Items = data
             };
 
-            return pageResult;
+            return new ApiSuccessResult<PageResult<ProductViewModel>>(pageResult);
         }
 
         public async Task<ProductViewModel> GetById(int productId, string languageId)
@@ -272,7 +278,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
                 productImage.IsDefault = request.IsDefault;
                 productImage.SortOrder = request.SortOrder;
                 productImage.FileSize = request.ImageFile.Length;
-                productImage.ImagePath = await this.SaveFile(request.ImageFile);
+                productImage.ImagePath = await SaveFile(request.ImageFile);
             }
             _context.ProductImages.Update(productImage);
             return await _context.SaveChangesAsync();

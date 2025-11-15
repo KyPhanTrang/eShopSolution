@@ -36,7 +36,7 @@ namespace eShopSolution.AdminApp.Controllers
 
         public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
         {
-            var session = HttpContext.Session.GetString("Token");
+            var session = HttpContext.Session.GetString(SystemConstants.AppSettings.Token);
 
             if (string.IsNullOrEmpty(session)) return RedirectToAction("Login", "User");
 
@@ -61,7 +61,7 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> Login()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Remove("Token");
+            HttpContext.Session.Remove(SystemConstants.AppSettings.Token);
             return View();
         }
 
@@ -209,7 +209,7 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Remove("Token");
+            HttpContext.Session.Remove(SystemConstants.AppSettings.Token);
             return RedirectToAction("Login", "User");
         }
 

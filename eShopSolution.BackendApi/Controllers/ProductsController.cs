@@ -1,6 +1,6 @@
-﻿using eShopSolution.Data.Entities;
+﻿using eShopSolution.Application.Catalog.Products;
+using eShopSolution.Data.Entities;
 using eShopSolution.ViewModels.Catalog.ProductImages;
-using eShopSolution.ViewModels.Catalog.Products;
 using eShopSolution.ViewModels.Catalog.Products.Dtos.Manage;
 using eShopSolution.ViewModels.Catalog.Products.Dtos.Public;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +31,15 @@ namespace eShopSolution.BackendApi.Controllers
         {
             var product = await _publicProductService.GetAllByCategoryId(languageId, request);
             return Ok(product);
+        }
+
+        [HttpGet("paging")]
+        public async Task<IActionResult> GetProductPaging([FromQuery] GetManageProductPagingRequest request)
+        {
+            var products = await _manageProductService.GetAllPaging(request);
+            if (!products.IsSuccess || products.ResultObj == null)
+                return BadRequest(products);
+            return Ok(products);
         }
 
         //http:localhost:port/product/1

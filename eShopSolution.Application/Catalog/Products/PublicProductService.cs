@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace eShopSolution.ViewModels.Catalog.Products
+namespace eShopSolution.Application.Catalog.Products
 {
     public class PublicProductService : IPublicProductService
     {

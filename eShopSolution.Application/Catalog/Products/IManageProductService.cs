@@ -6,7 +6,7 @@ using eShopSolution.ViewModels.Common;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace eShopSolution.ViewModels.Catalog.Products
+namespace eShopSolution.Application.Catalog.Products
 {
     public interface IManageProductService
     {
@@ -24,7 +24,7 @@ namespace eShopSolution.ViewModels.Catalog.Products
 
         Task AddViewCount(int productId);
 
-        Task<PageResult<ProductViewModel>> GetAllPaging(GetManageProductPagingRequest request);
+        Task<ApiResult<PageResult<ProductViewModel>>> GetAllPaging(GetManageProductPagingRequest request);
 
         Task<int> AddImage(int productId, ProductImageCreateRequest request);
 

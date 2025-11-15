@@ -5,7 +5,8 @@ namespace eShopSolution.ViewModels.Catalog.Products.Dtos.Manage
 {
     public class GetManageProductPagingRequest : PagingRequestBase
     {
-        public string KeyWord { get; set; }
-        public List<int> CategoryIds { get; set; }
+        public string Keyword { get; set; }
+        public List<int> CategoryIds { get; set; } = new List<int>();
+        public string LanguageId { get; set; }
     }
 }

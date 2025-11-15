@@ -1,4 +1,5 @@
 ﻿using eShopSolution.AdminApp.Services;
+using eShopSolution.Utilities.Constants;
 using eShopSolution.ViewModels.Common;
 using eShopSolution.ViewModels.System.Roles;
 using eShopSolution.ViewModels.System.Users;
@@ -86,7 +87,9 @@ namespace eShopSolution.AdminApp.Controllers
                     : DateTimeOffset.UtcNow.AddMinutes(15)
             };
 
-            HttpContext.Session.SetString("Token", result.ResultObj);
+            HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId,
+                _config[SystemConstants.AppSettings.DefaultLanguageId]);
+            HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.ResultObj);
 
             await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,

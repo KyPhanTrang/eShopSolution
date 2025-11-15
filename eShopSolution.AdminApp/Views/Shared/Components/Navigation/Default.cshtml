@@ -1,0 +1,39 @@
+﻿@model NavigationViewModel
+
+<!-- Nav Item - Select Language -->
+<li class="nav-item dropdown no-arrow mx-1">
+    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button"
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-language fa-fw"></i>
+        <span class="badge badge-primary badge-counter">
+            @((Model.CurrentLanguageId == "vi-VN") ? "vi" : "en")
+        </span>
+    </a>
+
+    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+         aria-labelledby="languageDropdown">
+        <h6 class="dropdown-header">Select Language</h6>
+        <form id="formChangeLanguage" action="/Home/Language" method="post">
+            @* <select class="form-control"
+                asp-for="CurrentLanguageId"
+                asp-items="@(new SelectList(Model.Languages, "Id", "Name", Model.CurrentLanguageId))"
+                    onchange="this.form.submit()">
+                
+            </select> *@
+            @foreach (var language in Model.Languages)
+            {
+                <button type="submit"
+                        name="languageId"
+                        class="dropdown-item d-flex align-items-center"
+                        value="@language.Id">
+                    @language.Name
+                    @if (language.Id == Model.CurrentLanguageId)
+                    {
+                        <span class="ms-auto text-success mx-1"><i class="fa fa-check"></i></span>
+                    }
+                </button>
+            }
+        </form>
+
+    </div>
+</li>

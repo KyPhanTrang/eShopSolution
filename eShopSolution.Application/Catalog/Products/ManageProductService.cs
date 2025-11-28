@@ -59,8 +59,9 @@ namespace eShopSolution.Application.Catalog.Products
 
         public async Task<int> Create(ProductCreateRequest request)
         {
-            //try
-            //{
+            if (request == null)
+                return -1;
+
             var product = new Product()
             {
                 Price = request.Price,
@@ -97,14 +98,7 @@ namespace eShopSolution.Application.Catalog.Products
             }
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-            //return new ApiSuccessResult<int>(product.Id); ==> ok but not synchronous with whole code before
             return product.Id;
-            //}
-            //catch (Exception ex)
-            //{
-            //    //return new ApiErrorResult<int>($"Tạo sản phẩm thất bại: {ex.Message}", 0);
-            //    return -1;
-            //}
         }
 
         public async Task<int> Delete(int productId)
@@ -136,15 +130,15 @@ namespace eShopSolution.Application.Catalog.Products
             // 1. Select join
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
-                        join pic in _context.ProductInCategories on pt.ProductId equals pic.ProductId
-                        join c in _context.Categories on pic.CategoryId equals c.Id
-                        where pt.LanguageId == request.LanguageId
-                        select new { p, pt, pic };
+                        //join pic in _context.ProductInCategories on pt.ProductId equals pic.ProductId
+                        //join c in _context.Categories on pic.CategoryId equals c.Id
+                        //where pt.LanguageId == request.LanguageId
+                        select new { p, pt };
             // Filter
             if (!string.IsNullOrEmpty(request.Keyword))
                 query = query.Where(x => x.pt.Name.Contains(request.Keyword));
-            if (request.CategoryIds != null || request.CategoryIds.Count > 0)
-                query = query.Where(p => request.CategoryIds.Contains(p.pic.CategoryId));
+            //if (request.CategoryIds != null && request.CategoryIds.Count > 0)
+            //    query = query.Where(p => request.CategoryIds.Contains(p.pic.CategoryId));
 
             // 3. Paging
             int totalRow = await query.CountAsync();

@@ -53,6 +53,7 @@ namespace eShopSolution.BackendApi.Controllers
         }
 
         [HttpPost]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] ProductCreateRequest request)
         {
             if (!ModelState.IsValid)
@@ -60,11 +61,12 @@ namespace eShopSolution.BackendApi.Controllers
                 return BadRequest(ModelState);
             }
             var productId = await _manageProductService.Create(request);
-            if (productId == -1)
+            if (productId == 0)
                 return BadRequest();
 
-            var productViewModel = await _manageProductService.GetById(productId, request.LanguageId);
-            return CreatedAtAction(nameof(GetById), new { id = productId }, productViewModel);
+            var product = await _manageProductService.GetById(productId, request.LanguageId);
+
+            return CreatedAtAction(nameof(GetById), new { productId = productId, languageId = request.LanguageId }, product);
         }
 
         [HttpPut] // Update all use Put

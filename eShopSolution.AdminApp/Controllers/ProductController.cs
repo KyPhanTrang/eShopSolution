@@ -54,5 +54,30 @@ namespace eShopSolution.AdminApp.Controllers
 
             return View(data.ResultObj);
         }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Create([FromForm] ProductCreateRequest request)
+        {
+            if (!ModelState.IsValid)
+                return View(request);
+
+            var result = await _productApiClient.Create(request);
+            if (result)
+            {
+                TempData["Message"] = "Thêm mới sản phẩm thành công!";
+                TempData["IsSuccess"] = true;
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError("", "Create product is failed");
+            return View(request);
+        }
     }
 }

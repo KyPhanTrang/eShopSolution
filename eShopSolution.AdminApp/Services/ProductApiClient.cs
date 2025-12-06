@@ -73,8 +73,7 @@ namespace eShopSolution.AdminApp.Services
         {
             return await GetAsync<PageResult<ProductViewModel>>($"/api/products/paging?pageIndex={request.PageIndex}" +
                 $"&pageSize={request.PageSize}&keyword={request.Keyword}" +
-                $"&languageId={request.LanguageId}");
-            //$"&categoryIds={request.CategoryIds}");
+                $"&languageId={request.LanguageId}&categoryId={request.CategoryId}");
         }
     }
 }

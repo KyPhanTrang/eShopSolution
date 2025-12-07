@@ -3,8 +3,10 @@ using eShopSolution.Data.Entities;
 using eShopSolution.ViewModels.Catalog.ProductImages;
 using eShopSolution.ViewModels.Catalog.Products.Dtos.Manage;
 using eShopSolution.ViewModels.Catalog.Products.Dtos.Public;
+using eShopSolution.ViewModels.System.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace eShopSolution.BackendApi.Controllers
@@ -46,10 +48,10 @@ namespace eShopSolution.BackendApi.Controllers
         [HttpGet("{productId}/{languageId}")]
         public async Task<IActionResult> GetById(int productId, string languageId)
         {
-            var product = await _manageProductService.GetById(productId, languageId);
-            if (product == null)
-                return BadRequest("Cannot find product");
-            return Ok(product);
+            var result = await _manageProductService.GetById(productId, languageId);
+            if (!result.IsSuccess || result.ResultObj == null)
+                return BadRequest(result);
+            return Ok(result);
         }
 
         [HttpPost]
@@ -152,6 +154,18 @@ namespace eShopSolution.BackendApi.Controllers
             if (result == 0) return BadRequest();
 
             return Ok();
+        }
+
+        [HttpPut("{id}/categories")]
+        public async Task<IActionResult> RoleAssign(int id, [FromBody] CategoryAssignRequest request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _manageProductService.CategoryAssign(id, request);
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }

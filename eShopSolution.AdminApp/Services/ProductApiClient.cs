@@ -29,6 +29,11 @@ namespace eShopSolution.AdminApp.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public async Task<ApiResult<bool>> CategoryAssign(CategoryAssignRequest request)
+        {
+            return await PutAsync<CategoryAssignRequest, bool>(request, $"api/products/{request.Id}/categories");
+        }
+
         public async Task<bool> Create(ProductCreateRequest request)
         {
             var session = _httpContextAccessor
@@ -67,6 +72,11 @@ namespace eShopSolution.AdminApp.Services
 
             var response = await client.PostAsync($"/api/products/", requestContent);
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<ApiResult<ProductViewModel>> GetProductById(int id, string languageId)
+        {
+            return await GetAsync<ProductViewModel>($"/api/products/{id}/{languageId}");
         }
 
         public async Task<ApiResult<PageResult<ProductViewModel>>> GetProductsPaging(GetManageProductPagingRequest request)

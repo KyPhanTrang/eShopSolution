@@ -12,6 +12,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -55,6 +56,43 @@ namespace eShopSolution.Application.Catalog.Products
             var product = await _context.Products.FindAsync(productId);
             product.ViewCount++;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<ApiResult<bool>> CategoryAssign(int id, CategoryAssignRequest request)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                return new ApiErrorResult<bool>("Product not exists!");
+
+            var oldCategories = await _context.ProductInCategories
+                .Where(x => x.ProductId == id)
+                .ToListAsync();
+
+            var selectedCategoryIds = request.Categories
+                .Where(x => x.Selected)
+                .Select(x => int.Parse(x.Id))
+                .ToList();
+            
+            foreach(var old in oldCategories)
+            {
+                if(!selectedCategoryIds.Contains(old.CategoryId))
+                    _context.ProductInCategories.Remove(old);
+            }
+
+            foreach(var catId in selectedCategoryIds)
+            {
+                if(!oldCategories.Any(x => x.CategoryId == catId))
+                {
+                    await _context.ProductInCategories.AddAsync(new ProductInCategory 
+                    { 
+                        CategoryId = catId, 
+                        ProductId = id 
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return new ApiSuccessResult<bool>();
         }
 
         public async Task<int> Create(ProductCreateRequest request)
@@ -130,10 +168,13 @@ namespace eShopSolution.Application.Catalog.Products
             // 1. Select join
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
-                        join pic in _context.ProductInCategories on pt.ProductId equals pic.ProductId
-                        join c in _context.Categories on pic.CategoryId equals c.Id
+                        join pic in _context.ProductInCategories on pt.ProductId equals pic.ProductId into ppic
+                        from pic in ppic.DefaultIfEmpty()
+                        join c in _context.Categories on pic.CategoryId equals c.Id into picc
+                        from c in picc.DefaultIfEmpty()
                         where pt.LanguageId == request.LanguageId
                         select new { p, pt, pic };
+
             // Filter
             if (!string.IsNullOrEmpty(request.Keyword))
                 query = query.Where(x => x.pt.Name.Contains(request.Keyword));
@@ -180,16 +221,22 @@ namespace eShopSolution.Application.Catalog.Products
             return new ApiSuccessResult<PageResult<ProductViewModel>>(pageResult);
         }
 
-        public async Task<ProductViewModel> GetById(int productId, string languageId)
+        public async Task<ApiResult<ProductViewModel>> GetById(int productId, string languageId)
         {
             var product = await _context.Products.FindAsync(productId);
 
-            if (product == null) return null;
+            if (product == null) return new ApiErrorResult<ProductViewModel>("Product not found");
 
-            var productTranslation = product.ProductTranslations.FirstOrDefault(x => x.ProductId == productId
+            var productTranslation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId
             && x.LanguageId == languageId);
 
-            return new ProductViewModel()
+            var categories = await (from c in _context.Categories
+                                    join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
+                                    join pic in _context.ProductInCategories on c.Id equals pic.CategoryId
+                                    where pic.ProductId == productId && ct.LanguageId == languageId
+                                    select ct.Name).ToListAsync();
+
+            var data = new ProductViewModel()
             {
                 ProductId = productId,
                 Description = productTranslation?.Description,
@@ -203,8 +250,11 @@ namespace eShopSolution.Application.Catalog.Products
                 SeoAlias = productTranslation?.SeoAlias,
                 SeoDescription = productTranslation?.SeoDescription,
                 SeoTitle = productTranslation?.SeoTitle,
-                ViewCount = product.ViewCount
+                ViewCount = product.ViewCount,
+                Categories = categories
             };
+
+            return new ApiSuccessResult<ProductViewModel>(data);
         }
 
         public async Task<ProductImageViewModel> GetImageById(int imageId)

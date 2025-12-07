@@ -16,7 +16,7 @@ namespace eShopSolution.Application.Catalog.Products
 
         Task<int> Delete(int productId);
 
-        Task<ProductViewModel> GetById(int productId, string languageId);
+        Task<ApiResult<ProductViewModel>> GetById(int productId, string languageId);
 
         Task<bool> UpdatePrice(int productId, decimal newPrice);
 
@@ -35,5 +35,7 @@ namespace eShopSolution.Application.Catalog.Products
         Task<List<ProductImageViewModel>> GetImagesByProductId(int productId);
 
         Task<ProductImageViewModel> GetImageById(int imageId);
+
+        Task<ApiResult<bool>> CategoryAssign(int id, CategoryAssignRequest request);
     }
 }

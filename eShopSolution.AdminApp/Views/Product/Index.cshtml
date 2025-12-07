@@ -1,7 +1,7 @@
 ﻿@using eShopSolution.ViewModels.Common
 @model PageResult<eShopSolution.ViewModels.Catalog.Products.Dtos.ProductViewModel>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Product";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -81,7 +81,7 @@
                             <th>Giá nhập</th>
                             <th>Giá bán</th>
                             <th>Số lượng tồn</th>
-                            <th scope="col" colspan="3" class="text-center">Thao tác</th>
+                            <th scope="col" colspan="4" class="text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -91,7 +91,7 @@
                             <th>Giá nhập</th>
                             <th>Giá bán</th>
                             <th>Số lượng tồn</th>
-                            <th scope="col" colspan="3" class="text-center">Thao tác</th>
+                            <th scope="col" colspan="4" class="text-center">Thao tác</th>
                         </tr>
                     </tfoot>
                     <tbody>
@@ -124,6 +124,11 @@
                                             </button>
                                             <input type="hidden" id="deleteUserId" />
                                         </form>
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="CategoryAssign" asp-controller="Product" class="btn btn-primary" asp-route-id="@item.Id">
+                                            <i class="fa fa-tags"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             }

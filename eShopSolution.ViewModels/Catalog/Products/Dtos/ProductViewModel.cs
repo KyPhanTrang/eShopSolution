@@ -1,4 +1,6 @@
-﻿using System;
+﻿using eShopSolution.ViewModels.Catalog.Categories;
+using System;
+using System.Collections.Generic;
 
 namespace eShopSolution.ViewModels.Catalog.Products.Dtos
 {
@@ -18,5 +20,6 @@ namespace eShopSolution.ViewModels.Catalog.Products.Dtos
         public string SeoTitle { get; set; }
         public string SeoAlias { get; set; }
         public string LanguageId { get; set; }
+        public List<string> Categories { get; set; }
     }
 }

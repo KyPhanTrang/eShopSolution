@@ -20,6 +20,7 @@
                     onchange="this.form.submit()">
                 
             </select> *@
+            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
             @foreach (var language in Model.Languages)
             {
                 <button type="submit"

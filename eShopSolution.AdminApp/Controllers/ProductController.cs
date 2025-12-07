@@ -96,5 +96,62 @@ namespace eShopSolution.AdminApp.Controllers
             ModelState.AddModelError("", "Create product is failed");
             return View(request);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CategoryAssign(int id)
+        {
+            var assignCategoryRequest = await GetCategoryAssignRequest(id);
+            return View(assignCategoryRequest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CategoryAssign(CategoryAssignRequest request)
+        {
+            if (!ModelState.IsValid)
+                return View();
+
+            var result = await _productApiClient.CategoryAssign(request);
+            if (result.IsSuccess)
+            {
+                TempData["Message"] = "Gán danh mục thành công!";
+                TempData["IsSuccess"] = true;
+                return RedirectToAction("Index", "Product");
+            }
+            TempData["Message"] = "Gán danh mục thất bại!";
+            TempData["IsSuccess"] = false;
+
+            ModelState.AddModelError("", result.Message);
+            var categoryAssignRequest = await GetCategoryAssignRequest(request.Id);
+            return View(categoryAssignRequest);
+        }
+
+        private async Task<CategoryAssignRequest> GetCategoryAssignRequest(int id)
+        {
+            var languageId = HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
+
+            var productObj = await _productApiClient.GetProductById(id, languageId);
+            if (productObj == null || productObj.ResultObj == null)
+                return null;
+
+            var categoryObj = await _categoryApiClient.GetALl(languageId);
+            if (categoryObj == null || categoryObj.ResultObj == null)
+                return null;
+
+            var categoryAssignRequest = new CategoryAssignRequest()
+            {
+                Id = id,
+            };
+
+            foreach (var category in categoryObj.ResultObj)
+            {
+                categoryAssignRequest.Categories.Add(new SelectItem()
+                {
+                    Id = category.Id.ToString(),
+                    Name = category.Name,
+                    Selected = (productObj.ResultObj.Categories.Contains(category.Name))
+                });
+            }
+            return categoryAssignRequest;
+        }
     }
 }

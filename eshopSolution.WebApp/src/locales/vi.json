@@ -1,0 +1,14 @@
+{
+  "hello": "Xin chào",
+  "welcome": "Chào mừng bạn đến với cửa hàng của chúng tôi",
+  "cart": "Giỏ hàng",
+  "header.menu.bestSellers": "Bán chạy",
+  "header.menu.giftIdeas": "Gợi ý quà",
+  "header.menu.newReleases": "Hàng mới",
+  "header.menu.todayDeals": "Ưu đãi hôm nay",
+  "header.menu.customerService": "Hỗ trợ",
+  "header.category.allCategories": "Danh mục",
+  "header.action.cart": "Giỏ hàng",
+  "header.action.login": "Đăng nhập",
+  "header.search.placeholder": "Tìm kiếm"
+}

@@ -2,7 +2,7 @@
   <div class="footer_section layout_padding">
     <div class="container">
       <div class="footer_logo">
-        <a href="index.html"><img src="/images/footer-logo.png" /></a>
+        <a><img src="/images/footer-logo.png" /></a>
       </div>
       <div class="input_bt">
         <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email" />
@@ -10,11 +10,21 @@
       </div>
       <div class="footer_menu">
         <ul>
-          <li><a href="#">Best Sellers</a></li>
-          <li><a href="#">Gift Ideas</a></li>
-          <li><a href="#">New Releases</a></li>
-          <li><a href="#">Today's Deals</a></li>
-          <li><a href="#">Customer Service</a></li>
+          <li>
+            <a href="#">{{ $t('header.menu.bestSellers') }}</a>
+          </li>
+          <li>
+            <a href="#">{{ $t('header.menu.giftIdeas') }}</a>
+          </li>
+          <li>
+            <a href="#">{{ $t('header.menu.newReleases') }}</a>
+          </li>
+          <li>
+            <a href="#">{{ $t('header.menu.todayDeals') }}</a>
+          </li>
+          <li>
+            <a href="#">{{ $t('header.menu.customerService') }}</a>
+          </li>
         </ul>
       </div>
       <div class="location_main">Help Line Number : <a href="#">+1 1800 1200 1200</a></div>

@@ -5,11 +5,21 @@
         <div class="col-sm-12">
           <div class="custom_menu">
             <ul>
-              <li><a href="#">Best Sellers</a></li>
-              <li><a href="#">Gift Ideas</a></li>
-              <li><a href="#">New Releases</a></li>
-              <li><a href="#">Today's Deals</a></li>
-              <li><a href="#">Customer Service</a></li>
+              <li>
+                <a href="#">{{ $t('header.menu.bestSellers') }}</a>
+              </li>
+              <li>
+                <a href="#">{{ $t('header.menu.giftIdeas') }}</a>
+              </li>
+              <li>
+                <a href="#">{{ $t('header.menu.newReleases') }}</a>
+              </li>
+              <li>
+                <a href="#">{{ $t('header.menu.todayDeals') }}</a>
+              </li>
+              <li>
+                <a href="#">{{ $t('header.menu.customerService') }}</a>
+              </li>
             </ul>
           </div>
         </div>

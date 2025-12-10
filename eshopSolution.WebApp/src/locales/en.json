@@ -1,0 +1,14 @@
+{
+  "hello": "Hello",
+  "welcome": "Welcome to our shop",
+  "cart": "Cart",
+  "header.menu.bestSellers": "Best Sellers",
+  "header.menu.giftIdeas": "Gift Ideas",
+  "header.menu.newReleases": "New Releases",
+  "header.menu.todayDeals": "Today's Deals",
+  "header.menu.customerService": "Customer Service",
+  "header.category.allCategories": "All Category",
+  "header.action.cart": "Cart",
+  "header.action.login": "Login",
+  "header.search.placeholder": "Search this blog"
+}

@@ -8,7 +8,7 @@
       aria-haspopup="true"
       aria-expanded="false"
     >
-      All Category
+      {{ $t('header.category.allCategories') }}
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
       <a class="dropdown-item" href="#">Action</a>

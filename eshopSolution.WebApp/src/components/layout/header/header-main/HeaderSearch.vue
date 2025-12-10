@@ -2,7 +2,7 @@
   <div class="main">
     <!-- Another variation with a button -->
     <div class="input-group">
-      <input type="text" class="form-control" placeholder="Search this blog" />
+      <input type="text" class="form-control" :placeholder="t('header.search.placeholder')" />
       <div class="input-group-append">
         <button
           class="btn btn-secondary"
@@ -15,3 +15,8 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+</script>
